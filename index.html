@@ -5,16 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Bildannotationstool</title>
   </head>
-  <body>
+  <body
+    style="
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      height: 100%;
+    "
+  >
     <style>
-      body {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        width: 100%;
-        height: 100%;
-      }
-
       .container {
         border-style: solid;
         border-color: #f3f3f3;
@@ -30,9 +30,32 @@
         display: flex;
         align-items: center;
         justify-content: center;
+        flex-direction: column;
+      }
+
+      .uploadContainerHeader {
+        height: 10%;
+        width: 100%;
+        display: flex;
+      }
+
+      .uploadContainerHeader img {
+        margin-left: 5%;
+        margin-top: 2.5%;
+        height: 97.5%;
+      }
+
+      .uploadContainerBody {
+        height: 87.5%;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
       }
 
       .uploadButton {
+        margin-top: 50px;
         background-color: rgb(0, 150, 130);
         color: #ffffff;
         width: 175px;
@@ -52,6 +75,12 @@
         display: none;
       }
 
+      .uploadContainerFooter {
+        height: 2.5%;
+        width: 100%;
+        background-color: rgb(0, 150, 130);
+      }
+
       .annotationContainer {
         display: flex;
         flex-direction: row;
@@ -61,7 +90,6 @@
 
       .pictureContainer {
         width: 95%;
-        background-color: aqua;
       }
 
       .pictureContainer img {
@@ -77,8 +105,18 @@
     </style>
     <div class="container">
       <div id="uploadContainer" class="uploadContainer">
-        <div id="uploadButton" class="uploadButton">Foto hochladen</div>
-        <input type="file" id="fileInput" accept="image/*" hidden />
+        <div class="uploadContainerHeader">
+          <img
+            src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Logo_KIT.svg/1280px-Logo_KIT.svg.png"
+            alt=""
+          />
+        </div>
+        <div class="uploadContainerBody">
+          <h1>Beginne die Bildannotation</h1>
+          <div id="uploadButton" class="uploadButton">Bild hochladen</div>
+          <input type="file" id="fileInput" accept="image/*" hidden />
+        </div>
+        <div class="uploadContainerFooter"></div>
       </div>
       <div id="annotationContainer" class="annotationContainer">
         <div class="pictureContainer">
