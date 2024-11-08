@@ -98,6 +98,29 @@
         object-fit: cover;
       }
 
+      .removeImageButton {
+        position: absolute;
+        z-index: 99999999;
+        background-color: #f3f3f361;
+        padding: 7.5px 12.5px;
+        border-radius: 7px;
+        color: #ffffff;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-left: 1%;
+        margin-top: 1%;
+      }
+
+      .removeImageButton:hover {
+        background-color: #f3f3f32a;
+      }
+
+      .removeImageButton i {
+        margin-left: 5px;
+      }
+
       .annotationFeaturesContainer {
         width: 5%;
         background-color: aquamarine;
@@ -120,6 +143,9 @@
       </div>
       <div id="annotationContainer" class="annotationContainer">
         <div class="pictureContainer">
+          <div class="removeImageButton" onclick="removeFile()">
+            Bild entfernen<i class="fas fa-times"></i>
+          </div>
           <img id="uploadedImageDisplay" src="" alt="Uploaded Image" />
         </div>
         <div class="annotationFeaturesContainer"></div>
@@ -160,10 +186,26 @@
         }
       }
 
+      function removeFile() {
+        const removeButton = document.getElementById("removeButton");
+        const uploadedImageDisplay = document.getElementById(
+          "uploadedImageDisplay"
+        );
+
+        uploadedImageDisplay.src = ""; // Clears the src attribute to remove the image
+
+        console.log("Bild wurde entfernt.");
+
+        document.getElementById("uploadContainer").style.display = "flex";
+        document.getElementById("annotationContainer").style.display = "none";
+      }
+
       // Initialize the upload functionality
       initUpload();
-
-      function uploadPicture(params) {}
     </script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
   </body>
 </html>
