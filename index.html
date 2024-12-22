@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Bildannotationstool</title>
+    <title>Annotation Tool</title>
   </head>
   <body
     style="
@@ -56,7 +56,7 @@
 
       .uploadButton {
         margin-top: 50px;
-        background-color: rgb(0, 150, 130);
+        background-color: #009682;
         color: #ffffff;
         width: 175px;
         height: 45px;
@@ -78,21 +78,127 @@
       .uploadContainerFooter {
         height: 2.5%;
         width: 100%;
-        background-color: rgb(0, 150, 130);
+        background-color: #009682;
       }
 
       .annotationContainer {
         display: flex;
-        flex-direction: row;
+        flex-direction: column;
         height: 100%;
         width: 100%;
       }
 
-      .pictureContainer {
-        width: 95%;
+      .annotationContainerHead {
+        display: flex;
+        flex-direction: row;
+        height: 7%;
+        border-bottom-style: solid;
+        border-bottom-color: #f3f3f3;
       }
 
-      .pictureContainer img {
+      .annotationContainerHeadLeft {
+        width: 50%;
+        display: flex;
+        align-items: center;
+        padding: 0% 0.5%;
+      }
+
+      .annotationContainerHeadLeft img {
+        height: 80%;
+      }
+
+      .annotationContainerHeadRight {
+        display: flex;
+        flex-direction: row;
+        width: 50%;
+        justify-content: flex-end;
+        align-items: center;
+        padding: 0% 1.5%;
+      }
+
+      .topNavBtn {
+        border-radius: 7px;
+        height: 90%;
+        color: #222222;
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        margin-left: 20px;
+      }
+
+      .topNavBtn i {
+        margin-top: 25%;
+        font-size: 15px;
+        margin-bottom: -15%;
+      }
+
+      .topNavBtn p {
+        font-size: 12px;
+      }
+
+      .topNavBtn:hover {
+        color: rgba(34, 34, 34, 0.748);
+      }
+
+      .annotationContainerBody {
+        display: flex;
+        flex-direction: row;
+        height: 93%;
+      }
+
+      .annotationContainerBodyLeft {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 3.5%;
+      }
+
+      .annotationContainerBodyLeftSection {
+        padding-top: 10px;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        border-bottom-style: solid;
+        border-bottom-color: #f3f3f3;
+      }
+
+      .annotation-btn {
+        width: 80%;
+        height: 32px;
+        border-radius: 5px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 10px;
+        cursor: pointer;
+        color: #222222;
+      }
+
+      .annotation-btn:hover {
+        color: rgb(34, 34, 34, 0.748);
+      }
+
+      .annotation-btn i {
+        font-size: 18px;
+      }
+
+      .annotation-btn.active {
+        background-color: #f3f3f3;
+      }
+
+      .annotationContainerBodyCenter {
+        width: 80%;
+        background-color: #ffffff;
+        border-left-style: solid;
+        border-left-color: #f3f3f3;
+        border-right-style: solid;
+        border-right-color: #f3f3f3;
+      }
+
+      .annotationContainerBodyCenter img {
         width: 100%;
         height: 100%;
         object-fit: contain;
@@ -100,65 +206,84 @@
         user-select: none; /* Verhindert die Text- und Bildeingabe */
       }
 
-      .removeImageButton {
-        position: absolute;
-        z-index: 99999999;
-        background-color: rgb(0, 150, 130);
-        padding: 7.5px 12.5px;
-        border-radius: 7px;
-        color: #ffffff;
-        cursor: pointer;
+      .annotationContainerBodyRight {
+        width: 16.5%;
+        height: 100%;
+      }
+
+      .annotationContainerBodyRightHeader {
         display: flex;
         align-items: center;
-        justify-content: center;
-        margin-left: 1%;
-        margin-top: 1%;
+        padding-left: 10px;
+        height: 5%;
+        color: #222222;
       }
 
-      .removeImageButton:hover {
-        background-color: rgba(0, 150, 130, 0.748);
+      .annotationContainerBodyRightBody {
+        height: 95%;
+        overflow-y: auto;
       }
 
-      .removeImageButton i {
-        margin-left: 5px;
+      .annotationList {
+        list-style-type: none;
+        margin: 0;
+        padding: 2.5px 0;
       }
 
-      .annotationFeaturesContainer {
+      .annotationItem {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        padding: 5px;
+        margin: 2.5px 5px;
+        border-bottom-style: solid;
+        border-bottom-color: #f3f3f3;
+        background-color: #f3f3f35e;
+      }
+
+      .annotationItemLeft {
         display: flex;
         flex-direction: column;
-        align-items: center;
-        width: 5%;
-        background-color: #ffffff;
-        border-left-style: solid;
-        border-left-color: #f3f3f3;
-        padding-top: 5px;
+        width: 85%;
       }
 
-      .annotation-btn {
-        width: 80%;
-        height: 45px;
-        background-color: rgb(0, 150, 130);
-        border-radius: 8px;
+      .annotationType {
+        font-size: 10px;
+        color: #222222;
+      }
+
+      .annotationLabel {
+        font-size: 12px;
+        margin: 5px 0;
+      }
+
+      .annotationItemLeft input {
+        padding: 5px;
+        border-radius: 5px;
+        border: 1px solid #f3f3f3;
+        width: 85%;
+      }
+
+      .annotationItemRight {
+        width: 15%;
         display: flex;
         align-items: center;
         justify-content: center;
-        margin-bottom: 5px;
+      }
+
+      .removeAnnotationBtn {
         cursor: pointer;
       }
 
-      .annotation-btn:hover {
-        background-color: rgba(0, 150, 130, 0.748);
-      }
-
-      .annotation-btn i {
-        font-size: 20px;
-        color: #ffffff;
-      }
-
-      .annotation-btn.active {
-        background-color: #2c6d76;
+      .removeAnnotationBtn i {
+        color: #222222;
       }
     </style>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
     <div class="container">
       <div id="uploadContainer" class="uploadContainer">
         <div class="uploadContainerHeader">
@@ -175,45 +300,68 @@
         <div class="uploadContainerFooter"></div>
       </div>
       <div id="annotationContainer" class="annotationContainer">
-        <div class="pictureContainer">
-          <div class="removeImageButton" onclick="removeFile()">
-            Bild entfernen<i class="fas fa-times"></i>
+        <div class="annotationContainerHead">
+          <div class="annotationContainerHeadLeft">
+            <img
+              src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Logo_KIT.svg/1280px-Logo_KIT.svg.png"
+              alt=""
+            />
           </div>
-          <button
-            id="finishPolylineBtn"
-            class="annotation-btn"
-            style="display: none; position: absolute; z-index: 999999"
-          >
-            Finish Polyline
-          </button>
-          <img id="uploadedImageDisplay" src="" alt="Uploaded Image" />
-          <canvas
-            id="annotationCanvas"
-            width="1092.5"
-            height="700"
-            style="
-              background-color: #2c6d76;
-              position: absolute;
-              margin-left: -1092.5px;
-            "
-          ></canvas>
+          <div class="annotationContainerHeadRight">
+            <div class="topNavBtn">
+              <i class="fas fa-save"></i>
+              <p>Speichern</p>
+            </div>
+            <div class="topNavBtn" onclick="removeFile()">
+              <i class="fas fa-times"></i>
+              <p>Neustart</p>
+            </div>
+          </div>
         </div>
-        <div class="annotationFeaturesContainer">
-          <div id="boundingBoxBtn" class="annotation-btn active">
-            <i class="fas fa-vector-square"></i>
+        <div class="annotationContainerBody">
+          <div class="annotationContainerBodyLeft">
+            <div class="annotationContainerBodyLeftSection">
+              <div id="pointerBtn" class="annotation-btn">
+                <i class="fas fa-mouse-pointer"></i>
+              </div>
+            </div>
+            <div class="annotationContainerBodyLeftSection">
+              <div id="boundingBoxBtn" class="annotation-btn">
+                <i class="fas fa-vector-square"></i>
+              </div>
+              <div id="polylineBtn" class="annotation-btn">
+                <i class="fas fa-draw-polygon"></i>
+              </div>
+            </div>
           </div>
-          <div id="polylineBtn" class="annotation-btn">
-            <i class="fas fa-draw-polygon"></i>
+          <div class="annotationContainerBodyCenter">
+            <button
+              id="finishPolylineBtn"
+              class="annotation-btn"
+              style="display: none; position: absolute; z-index: 999999"
+            >
+              Finish Polyline
+            </button>
+            <img id="uploadedImageDisplay" src="" alt="Uploaded Image" />
+            <canvas
+              id="annotationCanvas"
+              width="920"
+              height="650"
+              style="position: absolute; margin-left: -920px"
+            ></canvas>
+          </div>
+          <div class="annotationContainerBodyRight">
+            <div class="annotationContainerBodyRightHeader">
+              <h4>Objekte</h4>
+            </div>
+            <div class="annotationContainerBodyRightBody">
+              <ul class="annotationList" id="annotationList"></ul>
+            </div>
           </div>
         </div>
       </div>
     </div>
     <script>
-      // To Do
-      // Bugs aus Bounding Boxes und Polylines entfernen
-      // Remove Annotationen
-      // Arrays für Annotationen zurücksetzen wenn Bild entfernt wird
-
       // File upload and deletion
       const uploadBtn = document.getElementById("uploadButton");
       const fileInput = document.getElementById("fileInput");
@@ -246,21 +394,27 @@
 
           document.getElementById("uploadContainer").style.display = "none";
           document.getElementById("annotationContainer").style.display = "flex";
+
+          // Reset the file input value to ensure change event is triggered next time
+          fileInput.value = "";
         }
       }
 
       function removeFile() {
         const removeButton = document.getElementById("removeButton");
-        const uploadedImageDisplay = document.getElementById(
-          "uploadedImageDisplay"
-        );
 
         uploadedImageDisplay.src = ""; // Clears the src attribute to remove the image
+        uploadedImage = null;
 
         console.log("Bild wurde entfernt.");
 
         document.getElementById("uploadContainer").style.display = "flex";
         document.getElementById("annotationContainer").style.display = "none";
+
+        // Clear annotations
+        annotations = [];
+        ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas
+        updateAnnotationList(); // Update the list
       }
 
       // Initialize the upload functionality
@@ -272,12 +426,17 @@
       const boundingBoxBtn = document.getElementById("boundingBoxBtn");
       const polylineBtn = document.getElementById("polylineBtn");
       const finishPolylineBtn = document.getElementById("finishPolylineBtn");
-      let currentType = "boundingBox"; // Default type
+      const pointerBtn = document.getElementById("pointerBtn");
+      let currentType = ""; // Default type
       let startX,
         startY,
         isDrawing = false;
       let currentPoints = []; // For storing polyline points
       let annotations = []; // Array to store all annotations
+      let selectedAnnotation = null;
+      let offsetX, offsetY;
+      let isResizing = false;
+      let resizeHandleSize = 10;
 
       // Initialize buttons with click events
       function initAnnotationTool() {
@@ -288,6 +447,9 @@
           selectAnnotationType("polyline")
         );
         finishPolylineBtn.addEventListener("click", finishPolyline);
+        pointerBtn.addEventListener("click", () =>
+          selectAnnotationType("pointer")
+        );
 
         canvas.addEventListener("mousedown", startDrawing);
         canvas.addEventListener("mousemove", drawAnnotation);
@@ -297,6 +459,62 @@
           e.stopPropagation();
           // Zeichnen starten
         });
+      }
+
+      function updateAnnotationList() {
+        const annotationList = document.getElementById("annotationList");
+        annotationList.innerHTML = ""; // Clear the current list
+
+        annotations.forEach((ann, index) => {
+          const listItem = document.createElement("li");
+
+          // Create a complex structure using template literals
+          listItem.innerHTML = `
+            <div class="annotationItem" style="border: 2px solid ${ann.color}; background-color: ${ann.color}33;">
+              <div class="annotationItemLeft">
+                <div class="annotationType">${ann.type}</div>
+                <input class="annotationLabel" placeholder="Label" value="${ann.label}" />
+              </div>
+              <div class="annotationItemRight">
+                <div class="removeAnnotationBtn">
+                  <i class="fas fa-times"></i>  
+                </div>
+              </div>
+            </div>
+          `;
+
+          // Add event listener to update the label on input change
+          listItem
+            .querySelector(".annotationLabel")
+            .addEventListener("input", (e) => {
+              ann.label = e.target.value;
+              redrawAnnotations(); // Redraw annotations with updated labels
+            });
+
+          // Add event listener to remove annotation on button click
+          listItem
+            .querySelector(".removeAnnotationBtn")
+            .addEventListener("click", () => removeAnnotation(index));
+
+          // Append the list item to the annotation list
+          annotationList.appendChild(listItem);
+        });
+      }
+
+      function removeAnnotation(index) {
+        annotations.splice(index, 1); // Remove the annotation from the array
+        updateAnnotationList(); // Update the list
+        redrawAnnotations(); // Redraw annotations
+      }
+
+      function removeSelectedAnnotation() {
+        if (selectedAnnotation) {
+          const index = annotations.indexOf(selectedAnnotation);
+          if (index !== -1) {
+            removeAnnotation(index);
+          }
+          selectedAnnotation = null;
+        }
       }
 
       function selectAnnotationType(type) {
@@ -311,21 +529,40 @@
         } else if (type === "polyline") {
           polylineBtn.classList.add("active");
           finishPolylineBtn.style.display = "block";
+        } else if (type === "pointer") {
+          pointerBtn.classList.add("active");
+          finishPolylineBtn.style.display = "none";
         }
       }
 
       function startDrawing(e) {
-        startX = e.offsetX;
-        startY = e.offsetY;
-        isDrawing = true;
+        if (currentType === "pointer") {
+          selectedAnnotation = getResizeHandleAt(e.offsetX, e.offsetY);
+          if (selectedAnnotation) {
+            isResizing = true;
+            offsetX = e.offsetX;
+            offsetY = e.offsetY;
+          } else {
+            selectedAnnotation = getAnnotationAt(e.offsetX, e.offsetY);
+            if (selectedAnnotation) {
+              offsetX = e.offsetX - selectedAnnotation.x;
+              offsetY = e.offsetY - selectedAnnotation.y;
+              isDrawing = true;
+            }
+          }
+        } else {
+          startX = e.offsetX;
+          startY = e.offsetY;
+          isDrawing = true;
 
-        if (currentType === "polyline") {
-          currentPoints.push({ x: startX, y: startY });
+          if (currentType === "polyline") {
+            currentPoints.push({ x: startX, y: startY });
+          }
         }
       }
 
       function drawAnnotation(e) {
-        if (!isDrawing) return;
+        if (!isDrawing && !isResizing) return;
 
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         redrawAnnotations();
@@ -333,27 +570,48 @@
         if (currentType === "boundingBox") {
           const width = e.offsetX - startX;
           const height = e.offsetY - startY;
-          drawBoundingBox(startX, startY, width, height);
+          drawBoundingBox(startX, startY, width, height, "#009682");
         } else if (currentType === "polyline" && currentPoints.length > 0) {
-          drawPolyline([...currentPoints, { x: e.offsetX, y: e.offsetY }]);
+          drawPolyline(
+            [...currentPoints, { x: e.offsetX, y: e.offsetY }],
+            "blue"
+          );
+        } else if (currentType === "pointer" && selectedAnnotation) {
+          if (isResizing) {
+            selectedAnnotation.width = e.offsetX - selectedAnnotation.x;
+            selectedAnnotation.height = e.offsetY - selectedAnnotation.y;
+          } else {
+            selectedAnnotation.x = e.offsetX - offsetX;
+            selectedAnnotation.y = e.offsetY - offsetY;
+          }
+          redrawAnnotations(true);
+          updateAnnotationList(); // Update the list
         }
       }
 
       function stopDrawing(e) {
         isDrawing = false;
+        isResizing = false;
+        selectedAnnotation = null;
 
         if (currentType === "boundingBox") {
           const width = e.offsetX - startX;
           const height = e.offsetY - startY;
           const label = prompt("Label hinzufügen:");
-          annotations.push({
-            type: "boundingBox",
-            x: startX,
-            y: startY,
-            width,
-            height,
-            label,
-          });
+
+          if (label !== null && label.trim() !== "") {
+            annotations.push({
+              type: "boundingBox",
+              x: startX,
+              y: startY,
+              width,
+              height,
+              label,
+              color: getRandomColor(), // Assign a random color
+            });
+            updateAnnotationList(); // Update the list
+            redrawAnnotations(); // Redraw annotations
+          }
         } else if (currentType === "polyline") {
           currentPoints.push({ x: e.offsetX, y: e.offsetY });
         }
@@ -362,56 +620,172 @@
       function finishPolyline() {
         if (currentPoints.length > 1) {
           const label = prompt("Label hinzufügen:");
-          annotations.push({
-            type: "polyline",
-            points: [...currentPoints],
-            label,
-          });
-          currentPoints = [];
-          ctx.clearRect(0, 0, canvas.width, canvas.height);
-          redrawAnnotations();
+
+          if (label !== null && label.trim() !== "") {
+            annotations.push({
+              type: "polyline",
+              points: [...currentPoints],
+              label,
+              color: getRandomColor(), // Assign a random color
+            });
+            currentPoints = [];
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            redrawAnnotations(); // Redraw annotations
+            updateAnnotationList(); // Update the list
+          }
         }
       }
 
-      function drawBoundingBox(x, y, width, height) {
-        ctx.strokeStyle = "red";
+      function drawBoundingBox(x, y, width, height, color, highlight = false) {
+        ctx.strokeStyle = highlight ? "#009682" : color;
         ctx.lineWidth = 2;
         ctx.strokeRect(x, y, width, height);
+        ctx.fillStyle = highlight ? "#00968233" : color + "33"; // Set fill color with transparency
+        ctx.fillRect(x, y, width, height); // Fill the bounding box
+        ctx.fillStyle = highlight ? "#009682" : color; // Set text color
+        ctx.font = "12px Arial"; // Set text font
+        if (highlight) {
+          ctx.fillRect(
+            x + width - resizeHandleSize,
+            y + height - resizeHandleSize,
+            resizeHandleSize,
+            resizeHandleSize
+          );
+        }
       }
 
-      function drawPolyline(points) {
+      function drawPolyline(points, color) {
         ctx.beginPath();
         ctx.moveTo(points[0].x, points[0].y);
         points.forEach((point) => ctx.lineTo(point.x, point.y));
-        ctx.strokeStyle = "blue";
+        ctx.strokeStyle = color;
         ctx.lineWidth = 2;
         ctx.stroke();
+        ctx.fillStyle = color; // Set text color
+        ctx.font = "12px Arial"; // Set text font
       }
 
-      function redrawAnnotations() {
+      function redrawAnnotations(highlight = false) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas
         annotations.forEach((ann) => {
           if (ann.type === "boundingBox") {
-            drawBoundingBox(ann.x, ann.y, ann.width, ann.height);
-            ctx.fillText(ann.label, ann.x, ann.y - 5);
+            drawBoundingBox(
+              ann.x,
+              ann.y,
+              ann.width,
+              ann.height,
+              ann.color,
+              highlight && ann === selectedAnnotation
+            );
+            ctx.fillText(ann.label, ann.x, ann.y - 5); // Draw label above bounding box
           } else if (ann.type === "polyline") {
-            drawPolyline(ann.points);
-            ctx.fillText(ann.label, ann.points[0].x, ann.points[0].y - 5);
+            drawPolyline(ann.points, ann.color);
+            ctx.fillText(ann.label, ann.points[0].x, ann.points[0].y - 5); // Draw label at the start of polyline
           }
         });
       }
 
+      function getAnnotationAt(x, y) {
+        for (let i = annotations.length - 1; i >= 0; i--) {
+          const ann = annotations[i];
+          if (ann.type === "boundingBox") {
+            if (
+              x >= ann.x &&
+              x <= ann.x + ann.width &&
+              y >= ann.y &&
+              y <= ann.y + ann.height
+            ) {
+              return ann;
+            }
+          } else if (ann.type === "polyline") {
+            for (let j = 0; j < ann.points.length; j++) {
+              const point = ann.points[j];
+              if (Math.abs(x - point.x) < 5 && Math.abs(y - point.y) < 5) {
+                return ann;
+              }
+            }
+          }
+        }
+        return null;
+      }
+
+      function getResizeHandleAt(x, y) {
+        for (let i = annotations.length - 1; i >= 0; i--) {
+          const ann = annotations[i];
+          if (ann.type === "boundingBox") {
+            if (
+              x >= ann.x + ann.width - resizeHandleSize &&
+              x <= ann.x + ann.width &&
+              y >= ann.y + ann.height - resizeHandleSize &&
+              y <= ann.y + ann.height
+            ) {
+              return ann;
+            }
+          }
+        }
+        return null;
+      }
+
+      function getRandomColor() {
+        const letters = "0123456789ABCDEF";
+        let color = "#";
+        for (let i = 0; i < 6; i++) {
+          color += letters[Math.floor(Math.random() * 16)];
+        }
+        return color;
+      }
+
+      function saveAnnotationsToLocalStorage() {
+        const canvasDimensions = {
+          width: canvas.width,
+          height: canvas.height,
+        };
+
+        const data = {
+          canvasDimensions,
+          annotations,
+        };
+
+        const dataStr = JSON.stringify(data);
+        localStorage.setItem("annotationsData", dataStr);
+        alert("Annotations saved to local storage.");
+      }
+
+      function downloadAnnotations() {
+        const canvasDimensions = {
+          width: canvas.width,
+          height: canvas.height,
+        };
+
+        const data = {
+          canvasDimensions,
+          annotations,
+        };
+
+        const dataStr = JSON.stringify(data, null, 2);
+        const blob = new Blob([dataStr], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+
+        const exportFileDefaultName = "annotations.json";
+
+        const linkElement = document.createElement("a");
+        linkElement.setAttribute("href", url);
+        linkElement.setAttribute("download", exportFileDefaultName);
+        document.body.appendChild(linkElement); // Required for Firefox
+        linkElement.click();
+        document.body.removeChild(linkElement); // Cleanup
+        URL.revokeObjectURL(url); // Free up memory
+      }
+
+      document
+        .querySelector(".topNavBtn i.fa-save")
+        .parentElement.addEventListener("click", () => {
+          saveAnnotationsToLocalStorage();
+          downloadAnnotations();
+        });
+
       // Start the annotation tool
       initAnnotationTool();
-
-      // Bounding Boxes with Labels
-
-      // Tags
-
-      // Zoom in and out
     </script>
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
-    />
   </body>
 </html>
