@@ -198,6 +198,26 @@
         border-right-color: #f3f3f3;
       }
 
+      .finishPolylineBtn {
+        position: absolute;
+        z-index: 99999999;
+        margin-top: -40px;
+        margin-left: 27px;
+        border-style: solid;
+        border-color: #009682;
+        color: #009682;
+        padding: 5px 10px;
+        border-radius: 5px;
+        cursor: pointer;
+        display: none;
+        font-size: 14px;
+      }
+
+      .finishPolylineBtn:hover {
+        border-color: rgba(0, 150, 130, 0.748);
+        color: rgba(0, 150, 130, 0.748);
+      }
+
       .annotationContainerBodyCenter img {
         width: 100%;
         height: 100%;
@@ -335,13 +355,6 @@
             </div>
           </div>
           <div class="annotationContainerBodyCenter">
-            <button
-              id="finishPolylineBtn"
-              class="annotation-btn"
-              style="display: none; position: absolute; z-index: 999999"
-            >
-              Finish Polyline
-            </button>
             <img id="uploadedImageDisplay" src="" alt="Uploaded Image" />
             <canvas
               id="annotationCanvas"
@@ -356,6 +369,9 @@
             </div>
             <div class="annotationContainerBodyRightBody">
               <ul class="annotationList" id="annotationList"></ul>
+            </div>
+            <div id="finishPolylineBtn" class="finishPolylineBtn">
+              Polylinie beenden
             </div>
           </div>
         </div>
@@ -468,11 +484,15 @@
         annotations.forEach((ann, index) => {
           const listItem = document.createElement("li");
 
+          // Map the annotation type to a more readable format
+          const annotationType =
+            ann.type === "boundingBox" ? "Bounding Box" : "Polylinie";
+
           // Create a complex structure using template literals
           listItem.innerHTML = `
             <div class="annotationItem" style="border: 2px solid ${ann.color}; background-color: ${ann.color}33;">
               <div class="annotationItemLeft">
-                <div class="annotationType">${ann.type}</div>
+                <div class="annotationType">${annotationType}</div>
                 <input class="annotationLabel" placeholder="Label" value="${ann.label}" />
               </div>
               <div class="annotationItemRight">
@@ -525,13 +545,12 @@
 
         if (type === "boundingBox") {
           boundingBoxBtn.classList.add("active");
-          finishPolylineBtn.style.display = "none";
+          finishPolylineBtn.style.display = "none"; // Hide the button when switching to bounding box mode
         } else if (type === "polyline") {
           polylineBtn.classList.add("active");
-          finishPolylineBtn.style.display = "block";
         } else if (type === "pointer") {
           pointerBtn.classList.add("active");
-          finishPolylineBtn.style.display = "none";
+          finishPolylineBtn.style.display = "none"; // Hide the button when switching to pointer mode
         }
       }
 
@@ -545,8 +564,13 @@
           } else {
             selectedAnnotation = getAnnotationAt(e.offsetX, e.offsetY);
             if (selectedAnnotation) {
-              offsetX = e.offsetX - selectedAnnotation.x;
-              offsetY = e.offsetY - selectedAnnotation.y;
+              if (selectedAnnotation.type === "boundingBox") {
+                offsetX = e.offsetX - selectedAnnotation.x;
+                offsetY = e.offsetY - selectedAnnotation.y;
+              } else if (selectedAnnotation.type === "polyline") {
+                offsetX = e.offsetX;
+                offsetY = e.offsetY;
+              }
               isDrawing = true;
             }
           }
@@ -557,6 +581,7 @@
 
           if (currentType === "polyline") {
             currentPoints.push({ x: startX, y: startY });
+            finishPolylineBtn.style.display = "block"; // Show the button when drawing a polyline
           }
         }
       }
@@ -564,29 +589,105 @@
       function drawAnnotation(e) {
         if (!isDrawing && !isResizing) return;
 
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        redrawAnnotations();
+        requestAnimationFrame(() => {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          redrawAnnotations();
 
-        if (currentType === "boundingBox") {
-          const width = e.offsetX - startX;
-          const height = e.offsetY - startY;
-          drawBoundingBox(startX, startY, width, height, "#009682");
-        } else if (currentType === "polyline" && currentPoints.length > 0) {
-          drawPolyline(
-            [...currentPoints, { x: e.offsetX, y: e.offsetY }],
-            "blue"
-          );
-        } else if (currentType === "pointer" && selectedAnnotation) {
-          if (isResizing) {
-            selectedAnnotation.width = e.offsetX - selectedAnnotation.x;
-            selectedAnnotation.height = e.offsetY - selectedAnnotation.y;
-          } else {
-            selectedAnnotation.x = e.offsetX - offsetX;
-            selectedAnnotation.y = e.offsetY - offsetY;
+          if (currentType === "boundingBox") {
+            const width = e.offsetX - startX;
+            const height = e.offsetY - startY;
+            drawBoundingBox(startX, startY, width, height, "#009682");
+          } else if (currentType === "polyline" && currentPoints.length > 0) {
+            drawPolyline(
+              [...currentPoints, { x: e.offsetX, y: e.offsetY }],
+              "#009682"
+            );
+          } else if (currentType === "pointer" && selectedAnnotation) {
+            if (isResizing) {
+              const handleIndex = selectedAnnotation.handleIndex;
+              const ann = selectedAnnotation.annotation;
+              if (ann.type === "boundingBox") {
+                switch (handleIndex) {
+                  case 0: // top-left
+                    ann.width += ann.x - e.offsetX;
+                    ann.height += ann.y - e.offsetY;
+                    ann.x = e.offsetX;
+                    ann.y = e.offsetY;
+                    break;
+                  case 1: // top-middle
+                    ann.height += ann.y - e.offsetY;
+                    ann.y = e.offsetY;
+                    break;
+                  case 2: // top-right
+                    ann.width = e.offsetX - ann.x;
+                    ann.height += ann.y - e.offsetY;
+                    ann.y = e.offsetY;
+                    break;
+                  case 3: // middle-left
+                    ann.width += ann.x - e.offsetX;
+                    ann.x = e.offsetX;
+                    break;
+                  case 4: // middle-right
+                    ann.width = e.offsetX - ann.x;
+                    break;
+                  case 5: // bottom-left
+                    ann.width += ann.x - e.offsetX;
+                    ann.height = e.offsetY - ann.y;
+                    ann.x = e.offsetX;
+                    break;
+                  case 6: // bottom-middle
+                    ann.height = e.offsetY - ann.y;
+                    break;
+                  case 7: // bottom-right
+                    ann.width = e.offsetX - ann.x;
+                    ann.height = e.offsetY - ann.y;
+                    break;
+                }
+                drawBoundingBox(
+                  ann.x,
+                  ann.y,
+                  ann.width,
+                  ann.height,
+                  ann.color,
+                  true
+                ); // Highlight the bounding box when resizing
+              } else if (ann.type === "polyline") {
+                if (
+                  handleIndex === 0 ||
+                  handleIndex === ann.points.length - 1
+                ) {
+                  // Ensure the first and last points remain the same
+                  ann.points[0] = { x: e.offsetX, y: e.offsetY };
+                  ann.points[ann.points.length - 1] = {
+                    x: e.offsetX,
+                    y: e.offsetY,
+                  };
+                } else {
+                  ann.points[handleIndex] = { x: e.offsetX, y: e.offsetY };
+                }
+                drawPolyline(ann.points, ann.color, true);
+              }
+            } else {
+              if (selectedAnnotation.type === "boundingBox") {
+                selectedAnnotation.x = e.offsetX - offsetX;
+                selectedAnnotation.y = e.offsetY - offsetY;
+              } else if (selectedAnnotation.type === "polyline") {
+                const dx = e.offsetX - offsetX;
+                const dy = e.offsetY - offsetY;
+                selectedAnnotation.points = selectedAnnotation.points.map(
+                  (point) => ({
+                    x: point.x + dx,
+                    y: point.y + dy,
+                  })
+                );
+                offsetX = e.offsetX;
+                offsetY = e.offsetY;
+              }
+            }
+            redrawAnnotations(true);
+            updateAnnotationList(); // Update the list
           }
-          redrawAnnotations(true);
-          updateAnnotationList(); // Update the list
-        }
+        });
       }
 
       function stopDrawing(e) {
@@ -598,7 +699,6 @@
           const width = e.offsetX - startX;
           const height = e.offsetY - startY;
           const label = prompt("Label hinzufügen:");
-
           if (label !== null && label.trim() !== "") {
             annotations.push({
               type: "boundingBox",
@@ -620,8 +720,10 @@
       function finishPolyline() {
         if (currentPoints.length > 1) {
           const label = prompt("Label hinzufügen:");
-
           if (label !== null && label.trim() !== "") {
+            // Add the first point to the end to close the polyline
+            currentPoints.push(currentPoints[0]);
+
             annotations.push({
               type: "polyline",
               points: [...currentPoints],
@@ -632,6 +734,10 @@
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             redrawAnnotations(); // Redraw annotations
             updateAnnotationList(); // Update the list
+            finishPolylineBtn.style.display = "none"; // Hide the button when finished
+          } else {
+            currentPoints = []; // Clear the points if the label is not provided
+            finishPolylineBtn.style.display = "none"; // Hide the button if canceled
           }
         }
       }
@@ -644,25 +750,56 @@
         ctx.fillRect(x, y, width, height); // Fill the bounding box
         ctx.fillStyle = highlight ? "#009682" : color; // Set text color
         ctx.font = "12px Arial"; // Set text font
+
         if (highlight) {
-          ctx.fillRect(
-            x + width - resizeHandleSize,
-            y + height - resizeHandleSize,
-            resizeHandleSize,
-            resizeHandleSize
-          );
+          const handles = [
+            { x: x, y: y }, // top-left
+            { x: x + width / 2, y: y }, // top-middle
+            { x: x + width, y: y }, // top-right
+            { x: x, y: y + height / 2 }, // middle-left
+            { x: x + width, y: y + height / 2 }, // middle-right
+            { x: x, y: y + height }, // bottom-left
+            { x: x + width / 2, y: y + height }, // bottom-middle
+            { x: x + width, y: y + height }, // bottom-right
+          ];
+          handles.forEach((handle) => {
+            ctx.fillRect(
+              handle.x - resizeHandleSize / 2,
+              handle.y - resizeHandleSize / 2,
+              resizeHandleSize,
+              resizeHandleSize
+            );
+          });
         }
       }
 
-      function drawPolyline(points, color) {
+      function drawPolyline(points, color, highlight = false) {
         ctx.beginPath();
         ctx.moveTo(points[0].x, points[0].y);
         points.forEach((point) => ctx.lineTo(point.x, point.y));
-        ctx.strokeStyle = color;
+        ctx.strokeStyle = highlight ? "#009682" : color;
         ctx.lineWidth = 2;
         ctx.stroke();
-        ctx.fillStyle = color; // Set text color
-        ctx.font = "12px Arial"; // Set text font
+        if (
+          points.length > 2 &&
+          points[0].x === points[points.length - 1].x &&
+          points[0].y === points[points.length - 1].y
+        ) {
+          ctx.fillStyle = highlight ? "#00968233" : color + "33"; // Set fill color with transparency
+          ctx.fill(); // Fill the closed polyline
+        }
+
+        if (highlight) {
+          points.forEach((point) => {
+            ctx.fillStyle = "#009682";
+            ctx.fillRect(
+              point.x - resizeHandleSize / 2,
+              point.y - resizeHandleSize / 2,
+              resizeHandleSize,
+              resizeHandleSize
+            );
+          });
+        }
       }
 
       function redrawAnnotations(highlight = false) {
@@ -677,9 +814,17 @@
               ann.color,
               highlight && ann === selectedAnnotation
             );
+            ctx.fillStyle = ann === selectedAnnotation ? "#009682" : ann.color; // Set text color
+            ctx.font = "12px Arial"; // Set text font
             ctx.fillText(ann.label, ann.x, ann.y - 5); // Draw label above bounding box
           } else if (ann.type === "polyline") {
-            drawPolyline(ann.points, ann.color);
+            drawPolyline(
+              ann.points,
+              ann.color,
+              highlight && ann === selectedAnnotation
+            );
+            ctx.fillStyle = ann === selectedAnnotation ? "#009682" : ann.color; // Set text color
+            ctx.font = "12px Arial"; // Set text font
             ctx.fillText(ann.label, ann.points[0].x, ann.points[0].y - 5); // Draw label at the start of polyline
           }
         });
@@ -698,9 +843,13 @@
               return ann;
             }
           } else if (ann.type === "polyline") {
-            for (let j = 0; j < ann.points.length; j++) {
-              const point = ann.points[j];
-              if (Math.abs(x - point.x) < 5 && Math.abs(y - point.y) < 5) {
+            if (isPointInPolygon(ann.points, { x, y })) {
+              return ann;
+            }
+            for (let j = 0; j < ann.points.length - 1; j++) {
+              const point1 = ann.points[j];
+              const point2 = ann.points[j + 1];
+              if (isPointOnLineSegment(point1, point2, { x, y })) {
                 return ann;
               }
             }
@@ -709,17 +858,71 @@
         return null;
       }
 
+      function isPointOnLineSegment(point1, point2, point) {
+        const tolerance = 10; // Increase tolerance for easier selection
+        const distance =
+          Math.abs(
+            (point2.y - point1.y) * point.x -
+              (point2.x - point1.x) * point.y +
+              point2.x * point1.y -
+              point2.y * point1.x
+          ) /
+          Math.sqrt((point2.y - point1.y) ** 2 + (point2.x - point1.x) ** 2);
+        return distance <= tolerance;
+      }
+
+      function isPointInPolygon(points, point) {
+        let inside = false;
+        for (let i = 0, j = points.length - 1; i < points.length; j = i++) {
+          const xi = points[i].x,
+            yi = points[i].y;
+          const xj = points[j].x,
+            yj = points[j].y;
+
+          const intersect =
+            yi > point.y !== yj > point.y &&
+            point.x < ((xj - xi) * (point.y - yi)) / (yj - yi) + xi;
+          if (intersect) inside = !inside;
+        }
+        return inside;
+      }
+
       function getResizeHandleAt(x, y) {
         for (let i = annotations.length - 1; i >= 0; i--) {
           const ann = annotations[i];
           if (ann.type === "boundingBox") {
-            if (
-              x >= ann.x + ann.width - resizeHandleSize &&
-              x <= ann.x + ann.width &&
-              y >= ann.y + ann.height - resizeHandleSize &&
-              y <= ann.y + ann.height
-            ) {
-              return ann;
+            const handles = [
+              { x: ann.x, y: ann.y }, // top-left
+              { x: ann.x + ann.width / 2, y: ann.y }, // top-middle
+              { x: ann.x + ann.width, y: ann.y }, // top-right
+              { x: ann.x, y: ann.y + ann.height / 2 }, // middle-left
+              { x: ann.x + ann.width, y: ann.y + ann.height / 2 }, // middle-right
+              { x: ann.x, y: ann.y + ann.height }, // bottom-left
+              { x: ann.x + ann.width / 2, y: ann.y + ann.height }, // bottom-middle
+              { x: ann.x + ann.width, y: ann.y + ann.height }, // bottom-right
+            ];
+            for (let j = 0; j < handles.length; j++) {
+              const handle = handles[j];
+              if (
+                x >= handle.x - resizeHandleSize / 2 &&
+                x <= handle.x + resizeHandleSize / 2 &&
+                y >= handle.y - resizeHandleSize / 2 &&
+                y <= handle.y + resizeHandleSize / 2
+              ) {
+                return { annotation: ann, handleIndex: j };
+              }
+            }
+          } else if (ann.type === "polyline") {
+            for (let j = 0; j < ann.points.length; j++) {
+              const point = ann.points[j];
+              if (
+                x >= point.x - resizeHandleSize / 2 &&
+                x <= point.x + resizeHandleSize / 2 &&
+                y >= point.y - resizeHandleSize / 2 &&
+                y <= point.y + resizeHandleSize / 2
+              ) {
+                return { annotation: ann, handleIndex: j };
+              }
             }
           }
         }
