@@ -362,6 +362,24 @@
               height="650"
               style="position: absolute; margin-left: -920px"
             ></canvas>
+            <div class="adjustment-controls">
+              <label for="brightness-slider">Brightness:</label>
+              <input
+                id="brightness-slider"
+                type="range"
+                min="-100"
+                max="100"
+                value="0"
+              />
+              <label for="contrast-slider">Contrast:</label>
+              <input
+                id="contrast-slider"
+                type="range"
+                min="-100"
+                max="100"
+                value="0"
+              />
+            </div>
           </div>
           <div class="annotationContainerBodyRight">
             <div class="annotationContainerBodyRightHeader">
@@ -985,6 +1003,37 @@
         .parentElement.addEventListener("click", () => {
           saveAnnotationsToLocalStorage();
           downloadAnnotations();
+        });
+
+      // Funktion zur Anpassung von Helligkeit und Kontrast
+      function adjustImage(brightness, contrast) {
+        const image = document.getElementById("uploadedImageDisplay");
+        image.style.filter = `brightness(${brightness + 100}%) contrast(${
+          contrast + 100
+        }%)`;
+      }
+
+      // Event Listener für Helligkeits- und Kontrasteinstellungen
+      document
+        .getElementById("brightness-slider")
+        .addEventListener("input", (e) => {
+          const brightness = parseInt(e.target.value, 10);
+          const contrast = parseInt(
+            document.getElementById("contrast-slider").value,
+            10
+          );
+          adjustImage(brightness, contrast);
+        });
+
+      document
+        .getElementById("contrast-slider")
+        .addEventListener("input", (e) => {
+          const brightness = parseInt(
+            document.getElementById("brightness-slider").value,
+            10
+          );
+          const contrast = parseInt(e.target.value, 10);
+          adjustImage(brightness, contrast);
         });
 
       // Start the annotation tool
