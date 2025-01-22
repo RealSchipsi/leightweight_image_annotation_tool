@@ -97,7 +97,7 @@
       }
 
       .annotationContainerHeadLeft {
-        width: 50%;
+        width: 30%;
         display: flex;
         align-items: center;
         padding: 0% 0.5%;
@@ -107,10 +107,55 @@
         height: 80%;
       }
 
+      .annotationContainerHeadCenter {
+        width: 50%;
+        display: flex;
+      }
+
+      .adjustmentSlider p {
+        margin-right: 10px;
+      }
+
+      .adjustmentSlider {
+        display: flex;
+        align-items: center;
+        margin-right: 20px;
+      }
+
+      input[type="range"] {
+        -webkit-appearance: none;
+      }
+
+      input[type="range"]::-webkit-slider-runnable-track {
+        width: 300px;
+        height: 5px;
+        background: #ddd;
+        border: none;
+        border-radius: 3px;
+      }
+
+      input[type="range"]::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        border: none;
+        height: 16px;
+        width: 16px;
+        border-radius: 50%;
+        background: #009682;
+        margin-top: -5px;
+      }
+
+      input[type="range"]:focus {
+        outline: none;
+      }
+
+      input[type="range"]:focus::-webkit-slider-runnable-track {
+        background: #ccc;
+      }
+
       .annotationContainerHeadRight {
         display: flex;
         flex-direction: row;
-        width: 50%;
+        width: 20%;
         justify-content: flex-end;
         align-items: center;
         padding: 0% 1.5%;
@@ -196,26 +241,8 @@
         border-left-color: #f3f3f3;
         border-right-style: solid;
         border-right-color: #f3f3f3;
-      }
-
-      .finishPolylineBtn {
-        position: absolute;
-        z-index: 99999999;
-        margin-top: -40px;
-        margin-left: 27px;
-        border-style: solid;
-        border-color: #009682;
-        color: #009682;
-        padding: 5px 10px;
-        border-radius: 5px;
-        cursor: pointer;
-        display: none;
-        font-size: 14px;
-      }
-
-      .finishPolylineBtn:hover {
-        border-color: rgba(0, 150, 130, 0.748);
-        color: rgba(0, 150, 130, 0.748);
+        border-bottom-style: solid;
+        border-bottom-color: #f3f3f3;
       }
 
       .annotationContainerBodyCenter img {
@@ -299,6 +326,89 @@
       .removeAnnotationBtn i {
         color: #222222;
       }
+
+      .adjustment-slider {
+        width: 100%;
+        margin: 12px 0 0 0;
+      }
+
+      .overlay-controls {
+        position: absolute;
+        margin-top: -600px;
+        margin-left: 470px;
+        transform: translate(-50%, -50%);
+        background: rgba(255, 255, 255, 0.95);
+        padding: 15px 25px;
+        border-radius: 12px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+        z-index: 1000;
+        transition: all 0.3s ease;
+        backdrop-filter: blur(8px);
+        min-width: 200px;
+      }
+
+      .overlay-controls.visible {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+      }
+
+      .adjustment-slider {
+        -webkit-appearance: none;
+        width: 100%;
+        height: 4px;
+        border-radius: 2px;
+        background: #e0e0e0;
+        outline: none;
+        transition: all 0.3s ease;
+      }
+
+      .adjustment-slider::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background: #009682;
+        cursor: pointer;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        transition: all 0.2s ease;
+      }
+
+      .adjustment-slider::-webkit-slider-thumb:hover {
+        transform: scale(1.1);
+        background: #007a6a;
+      }
+
+      #finishPolylineBtn {
+        border-style: solid;
+        border-color: #009682;
+        color: #009682;
+        padding: 12px 20px;
+        border-radius: 8px;
+        cursor: pointer;
+        text-align: center;
+        font-size: 14px;
+      }
+
+      #finishPolylineBtn:hover {
+        border-color: rgba(0, 150, 130, 0.748);
+        color: rgba(0, 150, 130, 0.748);
+      }
+
+      .slider-label {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: #333;
+        font-size: 14px;
+        font-weight: 500;
+      }
+
+      .slider-label i {
+        color: #009682;
+        font-size: 16px;
+      }
     </style>
     <link
       rel="stylesheet"
@@ -327,6 +437,7 @@
               alt=""
             />
           </div>
+          <div class="annotationContainerHeadCenter"></div>
           <div class="annotationContainerHeadRight">
             <div class="topNavBtn">
               <i class="fas fa-save"></i>
@@ -341,16 +452,28 @@
         <div class="annotationContainerBody">
           <div class="annotationContainerBodyLeft">
             <div class="annotationContainerBodyLeftSection">
-              <div id="pointerBtn" class="annotation-btn">
+              <div id="pointerBtn" class="annotation-btn" title="Pointer">
                 <i class="fas fa-mouse-pointer"></i>
               </div>
             </div>
             <div class="annotationContainerBodyLeftSection">
-              <div id="boundingBoxBtn" class="annotation-btn">
+              <div
+                id="boundingBoxBtn"
+                class="annotation-btn"
+                title="Bounding Box"
+              >
                 <i class="fas fa-vector-square"></i>
               </div>
-              <div id="polylineBtn" class="annotation-btn">
+              <div id="polylineBtn" class="annotation-btn" title="Polylinie">
                 <i class="fas fa-draw-polygon"></i>
+              </div>
+            </div>
+            <div class="annotationContainerBodyLeftSection">
+              <div id="brightnessBtn" class="annotation-btn" title="Helligkeit">
+                <i class="far fa-sun"></i>
+              </div>
+              <div id="contrastBtn" class="annotation-btn" title="Kontrast">
+                <i class="fas fa-adjust"></i>
               </div>
             </div>
           </div>
@@ -362,23 +485,45 @@
               height="650"
               style="position: absolute; margin-left: -920px"
             ></canvas>
-            <div class="adjustment-controls">
-              <label for="brightness-slider">Brightness:</label>
-              <input
-                id="brightness-slider"
-                type="range"
-                min="-100"
-                max="100"
-                value="0"
-              />
-              <label for="contrast-slider">Contrast:</label>
-              <input
-                id="contrast-slider"
-                type="range"
-                min="-100"
-                max="100"
-                value="0"
-              />
+            <div class="overlay-controls" id="overlayControls">
+              <!-- Brightness Controls -->
+              <div id="brightnessControls" style="display: none">
+                <div class="slider-label">
+                  <i class="fa-regular fa-sun"></i>
+                  <span>Helligkeit:</span>
+                  <span id="brightnessValue">0</span>
+                </div>
+                <input
+                  type="range"
+                  id="brightnessSlider"
+                  class="adjustment-slider"
+                  min="-100"
+                  max="100"
+                  value="0"
+                />
+              </div>
+
+              <!-- Contrast Controls -->
+              <div id="contrastControls" style="display: none">
+                <div class="slider-label">
+                  <i class="fa-solid fa-circle-half-stroke"></i>
+                  <span>Kontrast:</span>
+                  <span id="contrastValue">0</span>
+                </div>
+                <input
+                  type="range"
+                  id="contrastSlider"
+                  class="adjustment-slider"
+                  min="-100"
+                  max="100"
+                  value="0"
+                />
+              </div>
+
+              <!-- Polyline Controls -->
+              <div id="polylineControls" style="display: none">
+                <div id="finishPolylineBtn">Polylinie beenden</div>
+              </div>
             </div>
           </div>
           <div class="annotationContainerBodyRight">
@@ -387,9 +532,6 @@
             </div>
             <div class="annotationContainerBodyRightBody">
               <ul class="annotationList" id="annotationList"></ul>
-            </div>
-            <div id="finishPolylineBtn" class="finishPolylineBtn">
-              Polylinie beenden
             </div>
           </div>
         </div>
@@ -507,19 +649,42 @@
             ann.type === "boundingBox" ? "Bounding Box" : "Polylinie";
 
           // Create a complex structure using template literals
-          listItem.innerHTML = `
-            <div class="annotationItem" style="border: 2px solid ${ann.color}; background-color: ${ann.color}33;">
-              <div class="annotationItemLeft">
-                <div class="annotationType">${annotationType}</div>
-                <input class="annotationLabel" placeholder="Label" value="${ann.label}" />
-              </div>
-              <div class="annotationItemRight">
-                <div class="removeAnnotationBtn">
-                  <i class="fas fa-times"></i>  
-                </div>
-              </div>
-            </div>
-          `;
+          const annotationItem = document.createElement("div");
+          annotationItem.className = "annotationItem";
+          annotationItem.style.border = `2px solid ${ann.color}`;
+          annotationItem.style.backgroundColor = `${ann.color}33`;
+
+          const annotationItemLeft = document.createElement("div");
+          annotationItemLeft.className = "annotationItemLeft";
+
+          const annotationTypeDiv = document.createElement("div");
+          annotationTypeDiv.className = "annotationType";
+          annotationTypeDiv.textContent = annotationType;
+
+          const annotationLabelInput = document.createElement("input");
+          annotationLabelInput.className = "annotationLabel";
+          annotationLabelInput.placeholder = "Label";
+          annotationLabelInput.value = ann.label;
+
+          annotationItemLeft.appendChild(annotationTypeDiv);
+          annotationItemLeft.appendChild(annotationLabelInput);
+
+          const annotationItemRight = document.createElement("div");
+          annotationItemRight.className = "annotationItemRight";
+
+          const removeAnnotationBtn = document.createElement("div");
+          removeAnnotationBtn.className = "removeAnnotationBtn";
+
+          const removeIcon = document.createElement("i");
+          removeIcon.className = "fas fa-times";
+
+          removeAnnotationBtn.appendChild(removeIcon);
+          annotationItemRight.appendChild(removeAnnotationBtn);
+
+          annotationItem.appendChild(annotationItemLeft);
+          annotationItem.appendChild(annotationItemRight);
+
+          listItem.appendChild(annotationItem);
 
           // Add event listener to update the label on input change
           listItem
@@ -557,18 +722,35 @@
 
       function selectAnnotationType(type) {
         currentType = type;
-        document
-          .querySelectorAll(".annotation-btn")
-          .forEach((btn) => btn.classList.remove("active"));
 
+        // Remove active class from ALL buttons including brightness and contrast
+        document.querySelectorAll(".annotation-btn").forEach((btn) => {
+          btn.classList.remove("active");
+        });
+
+        // Hide sliders and reset adjustments
+        document.getElementById("brightnessSlider").style.display = "none";
+        document.getElementById("contrastSlider").style.display = "none";
+        isBrightnessMode = false;
+        isContrastMode = false;
+
+        // Reset image adjustments
+        brightness = 0;
+        contrast = 0;
+        document.getElementById("brightnessSlider").value = 0;
+        document.getElementById("contrastSlider").value = 0;
+        document.getElementById("uploadedImageDisplay").style.filter = "none";
+
+        // Set active class only for annotation type buttons
         if (type === "boundingBox") {
           boundingBoxBtn.classList.add("active");
-          finishPolylineBtn.style.display = "none"; // Hide the button when switching to bounding box mode
+          finishPolylineBtn.style.display = "none";
         } else if (type === "polyline") {
           polylineBtn.classList.add("active");
+          finishPolylineBtn.style.display = "block";
         } else if (type === "pointer") {
           pointerBtn.classList.add("active");
-          finishPolylineBtn.style.display = "none"; // Hide the button when switching to pointer mode
+          finishPolylineBtn.style.display = "none";
         }
       }
 
@@ -599,7 +781,7 @@
 
           if (currentType === "polyline") {
             currentPoints.push({ x: startX, y: startY });
-            finishPolylineBtn.style.display = "block"; // Show the button when drawing a polyline
+            showControl("polylineControls"); // Show the button when starting to draw a polyline
           }
         }
       }
@@ -752,10 +934,10 @@
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             redrawAnnotations(); // Redraw annotations
             updateAnnotationList(); // Update the list
-            finishPolylineBtn.style.display = "none"; // Hide the button when finished
+            hideAllControls(); // Hide the overlay controls when finished
           } else {
             currentPoints = []; // Clear the points if the label is not provided
-            finishPolylineBtn.style.display = "none"; // Hide the button if canceled
+            hideAllControls(); // Hide the overlay controls if canceled
           }
         }
       }
@@ -885,7 +1067,9 @@
               point2.x * point1.y -
               point2.y * point1.x
           ) /
-          Math.sqrt((point2.y - point1.y) ** 2 + (point2.x - point1.x) ** 2);
+          Math.sqrt(
+            Math.pow(point2.y - point1.y, 2) + Math.pow(point2.x - point1.x, 2)
+          );
         return distance <= tolerance;
       }
 
@@ -965,11 +1149,11 @@
         const data = {
           canvasDimensions,
           annotations,
+          brightness,
+          contrast,
         };
 
-        const dataStr = JSON.stringify(data);
-        localStorage.setItem("annotationsData", dataStr);
-        alert("Annotations saved to local storage.");
+        localStorage.setItem("annotations", JSON.stringify(data));
       }
 
       function downloadAnnotations() {
@@ -981,6 +1165,8 @@
         const data = {
           canvasDimensions,
           annotations,
+          brightness,
+          contrast,
         };
 
         const dataStr = JSON.stringify(data, null, 2);
@@ -1005,38 +1191,146 @@
           downloadAnnotations();
         });
 
-      // Funktion zur Anpassung von Helligkeit und Kontrast
-      function adjustImage(brightness, contrast) {
-        const image = document.getElementById("uploadedImageDisplay");
-        image.style.filter = `brightness(${brightness + 100}%) contrast(${
-          contrast + 100
-        }%)`;
+      // Add these variables
+      let isBrightnessMode = false;
+      let isContrastMode = false;
+      let brightness = 0;
+      let contrast = 0;
+
+      // Add event listeners
+      document
+        .getElementById("brightnessSlider")
+        .addEventListener("input", updateBrightness);
+      document
+        .getElementById("contrastSlider")
+        .addEventListener("input", updateContrast);
+
+      function updateBrightness(e) {
+        brightness = e.target.value;
+        document.getElementById("brightnessValue").innerText = brightness;
+        applyImageAdjustments();
       }
 
-      // Event Listener für Helligkeits- und Kontrasteinstellungen
-      document
-        .getElementById("brightness-slider")
-        .addEventListener("input", (e) => {
-          const brightness = parseInt(e.target.value, 10);
-          const contrast = parseInt(
-            document.getElementById("contrast-slider").value,
-            10
-          );
-          adjustImage(brightness, contrast);
-        });
+      function updateContrast(e) {
+        contrast = e.target.value;
+        document.getElementById("contrastValue").innerText = contrast;
+        applyImageAdjustments();
+      }
 
-      document
-        .getElementById("contrast-slider")
-        .addEventListener("input", (e) => {
-          const brightness = parseInt(
-            document.getElementById("brightness-slider").value,
-            10
-          );
-          const contrast = parseInt(e.target.value, 10);
-          adjustImage(brightness, contrast);
-        });
+      function applyImageAdjustments() {
+        const img = document.getElementById("uploadedImageDisplay");
+        img.style.filter = `brightness(${
+          100 + parseInt(brightness)
+        }%) contrast(${100 + parseInt(contrast)}%)`;
+      }
 
-      // Start the annotation tool
+      // Reset function for when switching to other modes
+      function resetImageAdjustments() {
+        brightness = 0;
+        contrast = 0;
+        document.getElementById("brightnessSlider").value = 0;
+        document.getElementById("contrastSlider").value = 0;
+        document.getElementById("uploadedImageDisplay").style.filter = "none";
+      }
+
+      let activeMode = null;
+
+      function hideAllControls() {
+        document.getElementById("overlayControls").style.display = "none";
+        document.getElementById("brightnessControls").style.display = "none";
+        document.getElementById("contrastControls").style.display = "none";
+        document.getElementById("polylineControls").style.display = "none";
+      }
+
+      function showControl(controlId) {
+        document.getElementById("overlayControls").style.display = "block";
+        document.getElementById(controlId).style.display = "block";
+      }
+
+      function selectMode(mode) {
+        // If the same mode is clicked, do nothing
+        if (activeMode === mode) return;
+
+        // Reset states
+        currentType = null;
+        activeMode = mode;
+
+        // Reset UI
+        document
+          .querySelectorAll(".annotation-btn")
+          .forEach((btn) => btn.classList.remove("active"));
+        hideAllControls();
+
+        // Handle mode selection
+        switch (mode) {
+          case "brightness":
+            document.getElementById("brightnessBtn").classList.add("active");
+            showControl("brightnessControls");
+            break;
+
+          case "contrast":
+            document.getElementById("contrastBtn").classList.add("active");
+            showControl("contrastControls");
+            break;
+
+          case "polyline":
+            currentType = "polyline";
+            document.getElementById("polylineBtn").classList.add("active");
+            if (currentPoints.length > 0) {
+              showControl("polylineControls");
+            }
+            break;
+
+          case "boundingBox":
+            currentType = "boundingBox";
+            document.getElementById("boundingBoxBtn").classList.add("active");
+            break;
+
+          case "pointer":
+            currentType = "pointer";
+            document.getElementById("pointerBtn").classList.add("active");
+            break;
+        }
+      }
+
+      // Initialize event listeners
+      function initAnnotationTool() {
+        document
+          .getElementById("boundingBoxBtn")
+          .addEventListener("click", () => selectMode("boundingBox"));
+        document
+          .getElementById("polylineBtn")
+          .addEventListener("click", () => selectMode("polyline"));
+        document
+          .getElementById("pointerBtn")
+          .addEventListener("click", () => selectMode("pointer"));
+        document
+          .getElementById("brightnessBtn")
+          .addEventListener("click", () => selectMode("brightness"));
+        document
+          .getElementById("contrastBtn")
+          .addEventListener("click", () => selectMode("contrast"));
+
+        document
+          .getElementById("brightnessSlider")
+          .addEventListener("input", updateBrightness);
+        document
+          .getElementById("contrastSlider")
+          .addEventListener("input", updateContrast);
+
+        document
+          .getElementById("finishPolylineBtn")
+          .addEventListener("click", finishPolyline);
+
+        canvas.addEventListener("mousedown", startDrawing);
+        canvas.addEventListener("mousemove", drawAnnotation);
+        canvas.addEventListener("mouseup", stopDrawing);
+
+        // Ensure overlay controls are hidden initially
+        hideAllControls();
+      }
+
+      // Call initAnnotationTool to set up event listeners
       initAnnotationTool();
     </script>
   </body>
