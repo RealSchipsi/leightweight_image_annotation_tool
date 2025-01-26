@@ -162,7 +162,6 @@
       }
 
       .topNavBtn {
-        border-radius: 7px;
         height: 90%;
         color: #222222;
         cursor: pointer;
@@ -170,7 +169,7 @@
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        margin-left: 20px;
+        margin-left: 30px;
       }
 
       .topNavBtn i {
@@ -409,6 +408,74 @@
         color: #009682;
         font-size: 16px;
       }
+
+      .label-input-group {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        background: white;
+        padding: 5px;
+        border-radius: 8px;
+      }
+
+      .label-input {
+        flex: 1;
+        padding: 10px 15px;
+        border: 2px solid #e0e0e0;
+        border-radius: 6px;
+        font-size: 14px;
+        transition: all 0.2s ease;
+        outline: none;
+      }
+
+      .label-input:focus {
+        border-color: #009682;
+        box-shadow: 0 0 0 2px rgba(0, 150, 130, 0.1);
+      }
+
+      .save-label-btn {
+        background: #009682;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 6px;
+        font-size: 14px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.2s ease;
+      }
+
+      .save-label-btn:hover {
+        background: #007a6a;
+      }
+
+      .save-label-btn i {
+        font-size: 12px;
+      }
+
+      .cancel-label-btn {
+        background: #ff6b6b;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 6px;
+        font-size: 14px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.2s ease;
+      }
+
+      .cancel-label-btn:hover {
+        background: #e55a5a;
+      }
+
+      .cancel-label-btn i {
+        font-size: 12px;
+      }
     </style>
     <link
       rel="stylesheet"
@@ -440,12 +507,16 @@
           <div class="annotationContainerHeadCenter"></div>
           <div class="annotationContainerHeadRight">
             <div class="topNavBtn">
+              <i class="fas fa-refresh"></i>
+              <p>Neustart</p>
+            </div>
+            <div class="topNavBtn">
               <i class="fas fa-save"></i>
               <p>Speichern</p>
             </div>
             <div class="topNavBtn" onclick="removeFile()">
-              <i class="fas fa-times"></i>
-              <p>Neustart</p>
+              <i class="fas fa-home"></i>
+              <p>Verlassen</p>
             </div>
           </div>
         </div>
@@ -486,6 +557,26 @@
               style="position: absolute; margin-left: -920px"
             ></canvas>
             <div class="overlay-controls" id="overlayControls">
+              <!-- New Label -->
+              <div class="newLabel" id="newLabel" style="display: none">
+                <div class="label-input-group">
+                  <input
+                    type="text"
+                    id="annotationLabelInput"
+                    placeholder="Label eingeben..."
+                    class="label-input"
+                  />
+                  <button id="saveLabelBtn" class="save-label-btn">
+                    <i class="fas fa-check"></i>
+                    Speichern
+                  </button>
+                  <button id="cancelLabelBtn" class="cancel-label-btn">
+                    <i class="fas fa-times"></i>
+                    Abbruch
+                  </button>
+                </div>
+              </div>
+
               <!-- Brightness Controls -->
               <div id="brightnessControls" style="display: none">
                 <div class="slider-label">
@@ -603,11 +694,11 @@
       const polylineBtn = document.getElementById("polylineBtn");
       const finishPolylineBtn = document.getElementById("finishPolylineBtn");
       const pointerBtn = document.getElementById("pointerBtn");
-      let currentType = ""; // Default type
-      let startX,
-        startY,
-        isDrawing = false;
-      let currentPoints = []; // For storing polyline points
+      let currentPoints = [];
+      let currentType = null;
+      let activeMode = null;
+      let isDrawing = false;
+      let startX, startY, endX, endY;
       let annotations = []; // Array to store all annotations
       let selectedAnnotation = null;
       let offsetX, offsetY;
@@ -686,12 +777,48 @@
 
           listItem.appendChild(annotationItem);
 
-          // Add event listener to update the label on input change
           listItem
             .querySelector(".annotationLabel")
             .addEventListener("input", (e) => {
-              ann.label = e.target.value;
-              redrawAnnotations(); // Redraw annotations with updated labels
+              const oldLabel = ann.label;
+              const newLabel = e.target.value;
+
+              // Count how many times old label appears
+              const oldLabelCount = annotations.filter(
+                (a) => a.label === oldLabel
+              ).length;
+
+              // Update the label
+              ann.label = newLabel;
+
+              // Check if the new label already exists
+              const existingAnnotation = annotations.find(
+                (annotation) =>
+                  annotation.label === newLabel && annotation !== ann
+              );
+
+              if (existingAnnotation) {
+                // If the new label already exists, use the existing color
+                ann.color = existingAnnotation.color;
+              } else if (oldLabelCount > 1) {
+                // If old label appeared multiple times, assign new color
+                ann.color = getRandomColor();
+              }
+              // Keep original color if old label was unique
+
+              // Update colors of annotations with the old label
+              annotations.forEach((annotation) => {
+                if (annotation.label === oldLabel) {
+                  annotation.color = getColorForLabel(oldLabel);
+                }
+              });
+
+              // Update the color of the annotation list item
+              annotationItem.style.border = `2px solid ${ann.color}`;
+              annotationItem.style.backgroundColor = `${ann.color}33`;
+
+              // Redraw annotations without updating the annotation list
+              redrawAnnotations();
             });
 
           // Add event listener to remove annotation on button click
@@ -891,54 +1018,28 @@
       }
 
       function stopDrawing(e) {
-        isDrawing = false;
-        isResizing = false;
-        selectedAnnotation = null;
+        if (isDrawing) {
+          if (currentType === "boundingBox") {
+            endX = e.offsetX;
+            endY = e.offsetY;
 
-        if (currentType === "boundingBox") {
-          const width = e.offsetX - startX;
-          const height = e.offsetY - startY;
-          const label = prompt("Label hinzufügen:");
-          if (label !== null && label.trim() !== "") {
-            annotations.push({
-              type: "boundingBox",
-              x: startX,
-              y: startY,
-              width,
-              height,
-              label,
-              color: getRandomColor(), // Assign a random color
-            });
-            updateAnnotationList(); // Update the list
-            redrawAnnotations(); // Redraw annotations
+            // Show label input
+            showControl("newLabel");
+            document.getElementById("annotationLabelInput").value = "";
+            document.getElementById("annotationLabelInput").focus();
           }
-        } else if (currentType === "polyline") {
-          currentPoints.push({ x: e.offsetX, y: e.offsetY });
+          isDrawing = false;
         }
+        isResizing = false; // Reset resizing state when mouse is released
       }
 
       function finishPolyline() {
         if (currentPoints.length > 1) {
-          const label = prompt("Label hinzufügen:");
-          if (label !== null && label.trim() !== "") {
-            // Add the first point to the end to close the polyline
-            currentPoints.push(currentPoints[0]);
-
-            annotations.push({
-              type: "polyline",
-              points: [...currentPoints],
-              label,
-              color: getRandomColor(), // Assign a random color
-            });
-            currentPoints = [];
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            redrawAnnotations(); // Redraw annotations
-            updateAnnotationList(); // Update the list
-            hideAllControls(); // Hide the overlay controls when finished
-          } else {
-            currentPoints = []; // Clear the points if the label is not provided
-            hideAllControls(); // Hide the overlay controls if canceled
-          }
+          const button = document.getElementById("finishPolylineBtn");
+          if (button) button.style.display = "none";
+          showControl("newLabel");
+          document.getElementById("annotationLabelInput").value = "";
+          document.getElementById("annotationLabelInput").focus();
         }
       }
 
@@ -1132,12 +1233,43 @@
       }
 
       function getRandomColor() {
-        const letters = "0123456789ABCDEF";
+        // Predefined color palette for better visual consistency
+        const colors = [
+          "#FF6B6B", // Red
+          "#4ECDC4", // Turquoise
+          "#45B7D1", // Blue
+          "#96CEB4", // Mint
+          "#FFBE0B", // Yellow
+          "#FF006E", // Pink
+          "#8338EC", // Purple
+          "#3A86FF", // Royal Blue
+          "#FB5607", // Orange
+          "#38B000", // Green
+        ];
+
+        // Get random color from palette
+        const randomIndex = Math.floor(Math.random() * colors.length);
+
+        // Check if color is already in use
+        const usedColors = annotations.map((a) => a.color);
+        if (!usedColors.includes(colors[randomIndex])) {
+          return colors[randomIndex];
+        }
+
+        // If all palette colors used, generate random color
         let color = "#";
+        const letters = "0123456789ABCDEF";
         for (let i = 0; i < 6; i++) {
           color += letters[Math.floor(Math.random() * 16)];
         }
         return color;
+      }
+
+      function getColorForLabel(label) {
+        const existingAnnotation = annotations.find(
+          (ann) => ann.label === label
+        );
+        return existingAnnotation ? existingAnnotation.color : getRandomColor();
       }
 
       function saveAnnotationsToLocalStorage() {
@@ -1151,6 +1283,8 @@
           annotations,
           brightness,
           contrast,
+          imageName: uploadedImage ? uploadedImage.name : null,
+          timestamp: new Date().toISOString(),
         };
 
         localStorage.setItem("annotations", JSON.stringify(data));
@@ -1167,6 +1301,8 @@
           annotations,
           brightness,
           contrast,
+          imageName: uploadedImage ? uploadedImage.name : null,
+          timestamp: new Date().toISOString(),
         };
 
         const dataStr = JSON.stringify(data, null, 2);
@@ -1233,13 +1369,12 @@
         document.getElementById("uploadedImageDisplay").style.filter = "none";
       }
 
-      let activeMode = null;
-
       function hideAllControls() {
         document.getElementById("overlayControls").style.display = "none";
         document.getElementById("brightnessControls").style.display = "none";
         document.getElementById("contrastControls").style.display = "none";
         document.getElementById("polylineControls").style.display = "none";
+        document.getElementById("newLabel").style.display = "none";
       }
 
       function showControl(controlId) {
@@ -1293,6 +1428,58 @@
         }
       }
 
+      function saveLabel() {
+        const label = document.getElementById("annotationLabelInput").value;
+        if (label.trim() !== "") {
+          let color = getColorForLabel(label);
+
+          if (currentType === "polyline") {
+            currentPoints.push(currentPoints[0]);
+            annotations.push({
+              type: "polyline",
+              points: [...currentPoints],
+              label,
+              color,
+            });
+            currentPoints = [];
+            finishPolylineBtn.style.display = "block";
+          } else if (currentType === "boundingBox") {
+            // Calculate width and height
+            const width = Math.abs(endX - startX);
+            const height = Math.abs(endY - startY);
+            // Calculate top-left corner
+            const x = Math.min(startX, endX);
+            const y = Math.min(startY, endY);
+
+            annotations.push({
+              type: "boundingBox",
+              x,
+              y,
+              width,
+              height,
+              label,
+              color,
+            });
+          }
+
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          redrawAnnotations();
+          updateAnnotationList();
+          hideAllControls();
+          document.getElementById("annotationLabelInput").value = "";
+        }
+      }
+
+      function cancelLabel() {
+        hideAllControls();
+        currentPoints = [];
+        isDrawing = false;
+
+        if (currentType === "polyline") {
+          finishPolylineBtn.style.display = "block";
+        }
+      }
+
       // Initialize event listeners
       function initAnnotationTool() {
         document
@@ -1321,6 +1508,19 @@
         document
           .getElementById("finishPolylineBtn")
           .addEventListener("click", finishPolyline);
+        document
+          .getElementById("saveLabelBtn")
+          .addEventListener("click", saveLabel);
+        document
+          .getElementById("annotationLabelInput")
+          .addEventListener("keypress", (e) => {
+            if (e.key === "Enter") {
+              saveLabel();
+            }
+          });
+        document
+          .getElementById("cancelLabelBtn")
+          .addEventListener("click", cancelLabel);
 
         canvas.addEventListener("mousedown", startDrawing);
         canvas.addEventListener("mousemove", drawAnnotation);
