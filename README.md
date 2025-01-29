@@ -1,5 +1,16 @@
 # Lightweight Image Annotation Tool
 
+## Table of Contents
+- [Description](#description)
+- [Features](#features)
+- [Usage](#usage)
+- [Local Storage](#local-storage)
+- [Installation and Hosting](#usage)
+- [Embedding in Web-Based Survey Platforms](#embedding-in-web-based-survey-platforms)
+- [Code Structure](#code-structure)
+- [Acknowledgements](#acknowledgements)
+- [License](#license)
+
 ## Description
 This project is a **lightweight image annotation tool** that allows users to upload an image and annotate it with **bounding boxes and polylines.** Users can adjust the brightness and contrast of the image and save or remove annotations. The annotations are saved to local storage and can be downloaded as a JSON file. The focus of this tool lies in its **simplicity and high user experience, making it intuitive and efficient for users of all levels.** The tool is **easily embeddable** in common web-based survey platforms that support JavaScript, with primary testing conducted in SoSci Survey.
 
@@ -14,33 +25,6 @@ This project is a **lightweight image annotation tool** that allows users to upl
 - Save annotations to local storage.
 - Download annotations as a JSON file.
 - Remove annotations and restart the annotation process.
-
----
-
-## Installation and Hosting
-
-### Installation
-- **Clone the repository**  
-   Clone the repository to your local machine using Git:  
-   ```bash
-   git clone https://github.com/RealSchipsi/embedded_annotation.git
-
-### Hosting
- - Open the index.html file in your web browser
- - Alternatively, if you are using Visual Studio Code, you can install the Live Server extension by Ritwick Dey.
-   - Right-click index.html and select "Open with Live Server" to run the tool on localhost.
-
----
-
-## Embedding in Web-Based Survey Platforms
-
-The annotation tool is designed to be easily embeddable within common web-based survey programs that support JavaScript.  
-It has been primarily tested in **SoSci Survey**, ensuring seamless integration for research and user studies.
-
-To embed the tool in a survey platform:
-1. Ensure that the platform allows **custom HTML and JavaScript**.
-2. Embed the contents of `index.html` within the `<body>` tags, following the provided comments in `index.html` for proper integration.
-3. Adjust styles and behavior as needed to fit within the survey environment.
 
 ---
 
@@ -78,6 +62,33 @@ To embed the tool in a survey platform:
 ## Local Storage
 - Annotations are automatically saved to local storage whenever they are added, modified, removed, or resized.
 - To clear the annotations from local storage, click the **"Verlassen"** or **"Neustart"** button.
+
+---
+
+## Installation and Hosting
+
+### Installation
+- **Clone the repository**  
+   Clone the repository to your local machine using Git:  
+   ```bash
+   git clone https://github.com/RealSchipsi/embedded_annotation.git
+
+### Hosting
+ - Open the index.html file in your web browser
+ - Alternatively, if you are using Visual Studio Code, you can install the Live Server extension by Ritwick Dey.
+   - Right-click index.html and select "Open with Live Server" to run the tool on localhost.
+
+---
+
+## Embedding in Web-Based Survey Platforms
+
+The annotation tool is designed to be easily embeddable within common web-based survey programs that support JavaScript.  
+It has been primarily tested in **SoSci Survey**, ensuring seamless integration for research and user studies.
+
+To embed the tool in a survey platform:
+1. Ensure that the platform allows **custom HTML and JavaScript**.
+2. Embed the contents of `index.html` within the `<body>` tags, following the provided comments in `index.html` for proper integration.
+3. Adjust styles and behavior as needed to fit within the survey environment.
 
 ---
 
