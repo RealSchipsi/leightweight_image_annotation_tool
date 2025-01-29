@@ -5,7 +5,7 @@
 - [Features](#features)
 - [Usage](#usage)
 - [Local Storage](#local-storage)
-- [Installation and Hosting](#usage)
+- [Installation and Hosting](#installation-and-hosting)
 - [Embedding in Web-Based Survey Platforms](#embedding-in-web-based-survey-platforms)
 - [Code Structure](#code-structure)
 - [Acknowledgements](#acknowledgements)
