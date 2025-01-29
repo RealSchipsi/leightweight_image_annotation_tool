@@ -69,7 +69,7 @@
       }
 
       .upload-button:hover {
-        background-color: rgba(0, 150, 130, 0.748);
+        background-color: #009682bf;
       }
 
       #annotation-container {
@@ -130,7 +130,7 @@
       input[type="range"]::-webkit-slider-runnable-track {
         width: 300px;
         height: 5px;
-        background-color: #ddd;
+        background-color: #dddddd;
         border: none;
         border-radius: 3px;
       }
@@ -150,7 +150,7 @@
       }
 
       input[type="range"]:focus::-webkit-slider-runnable-track {
-        background-color: #ccc;
+        background-color: #cccccc;
       }
 
       .annotation-container-head-right {
@@ -184,7 +184,7 @@
       }
 
       .top-nav-button:hover {
-        color: rgba(34, 34, 34, 0.748);
+        color: #222222bf;
       }
 
       .annotation-container-body {
@@ -225,7 +225,7 @@
       }
 
       .annotation-button:hover {
-        color: rgb(34, 34, 34, 0.748);
+        color: #222222bf;
       }
 
       .annotation-button i {
@@ -336,10 +336,10 @@
         margin-top: -640px; /* Relative to container and not window */
         margin-left: 470px; /* Relative to container and not window */
         transform: translate(-50%, -50%);
-        background-color: rgba(255, 255, 255, 0.95);
+        background-color: #fffffff2;
         padding: 10px 15px;
         border-radius: 12px;
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+        box-shadow: 0 8px 32px #00000026;
         z-index: 1000;
         transition: all 0.3s ease;
         backdrop-filter: blur(8px);
@@ -370,7 +370,7 @@
         border-radius: 50%;
         background-color: #009682;
         cursor: pointer;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 2px 4px #0000001a;
         transition: all 0.2s ease;
       }
 
@@ -391,8 +391,8 @@
       }
 
       #finish-polyline-button:hover {
-        border-color: rgba(0, 150, 130, 0.748);
-        color: rgba(0, 150, 130, 0.748);
+        border-color: #009682bf;
+        color: #009682bf;
       }
 
       .slider-label {
@@ -418,7 +418,7 @@
         border-radius: 8px;
       }
 
-      .label-input {
+      .label-input-group input {
         flex: 1;
         padding: 10px 15px;
         border: 2px solid #e0e0e0;
@@ -428,9 +428,9 @@
         outline: none;
       }
 
-      .label-input:focus {
+      .label-input-group input:focus {
         border-color: #009682;
-        box-shadow: 0 0 0 2px rgba(0, 150, 130, 0.1);
+        box-shadow: 0 0 0 2px #0096821a;
       }
 
       .save-label-button {
@@ -484,7 +484,7 @@
         z-index: 1000;
         justify-content: center;
         align-items: center;
-        background-color: rgba(0, 0, 0, 0.5);
+        background-color: #00000080;
       }
 
       .overlay-submit {
@@ -559,7 +559,7 @@
         <div class="upload-container-header">
           <img
             src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Logo_KIT.svg/1280px-Logo_KIT.svg.png"
-            alt=""
+            alt="KIT Logo"
           />
         </div>
         <div class="upload-container-body">
@@ -574,7 +574,7 @@
           <div class="annotation-container-head-left">
             <img
               src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Logo_KIT.svg/1280px-Logo_KIT.svg.png"
-              alt=""
+              alt="KIT Logo"
             />
           </div>
           <div class="annotation-container-head-center"></div>
@@ -652,16 +652,15 @@
                     type="text"
                     id="annotation-label-input"
                     placeholder="Label eingeben..."
-                    class="label-input"
                   />
-                  <button id="save-label-button" class="save-label-button">
+                  <div id="save-label-button" class="save-label-button">
                     <i class="fas fa-check"></i>
                     Speichern
-                  </button>
-                  <button id="cancel-label-button" class="cancel-label-button">
+                  </div>
+                  <div id="cancel-label-button" class="cancel-label-button">
                     <i class="fas fa-times"></i>
                     Abbruch
-                  </button>
+                  </div>
                 </div>
               </div>
               <div id="brightness-controls" style="display: none">
