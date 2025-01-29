@@ -820,12 +820,17 @@
         ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas
         updateAnnotationList(); // Update the list
 
+        contrast = 0;
+        brightness = 0;
+
+        document.getElementById("contrast-value").innerText = contrast;
+        document.getElementById("brightness-value").innerText = brightness;
+
+        applyImageAdjustments();
+
         // Remove annotations from local storage
         localStorage.removeItem("annotations");
       }
-
-      // Initialize the upload functionality
-      initUpload();
 
       // Annotation features
       const canvas = document.getElementById("annotation-canvas");
@@ -836,16 +841,16 @@
         "finish-polyline-button"
       );
       const pointerButton = document.getElementById("pointer-button");
-      let currentPoints = [];
-      let currentType = null;
-      let activeMode = null;
+      let currentPoints = []; // Points while drawing annotation
+      let currentType = null; // Current annotation type
+      let activeMode = null; // Active mode (annotation or adjustment)
       let isDrawing = false;
-      let startX, startY, endX, endY;
+      let startX, startY, endX, endY; // Coordinates for bounding box
       let annotations = []; // Array to store all annotations
-      let selectedAnnotation = null;
-      let offsetX, offsetY;
+      let selectedAnnotation = null; // Selected annotation for resizing
+      let offsetX, offsetY; // Offset for resizing
       let isResizing = false;
-      let resizeHandleSize = 10;
+      let resizeHandleSize = 10; // Size of resize handles
 
       // Initialize buttons with click events
       function initAnnotationTool() {
@@ -974,16 +979,6 @@
           // Append the list item to the annotation list
           annotationList.appendChild(listItem);
         });
-      }
-
-      // Remove annotation from the list and redraw annotations
-      function removeAnnotation(index) {
-        annotations.splice(index, 1); // Remove the annotation from the array
-        updateAnnotationList(); // Update the list
-        redrawAnnotations(); // Redraw annotations
-
-        // Save to local storage
-        saveAnnotationsToLocalStorage();
       }
 
       // Select the annotation type
@@ -1179,15 +1174,43 @@
         isResizing = false; // Reset resizing state when mouse is released
       }
 
-      // Finish polyline drawing
-      function finishPolyline() {
-        if (currentPoints.length > 1) {
-          const button = document.getElementById("finish-polyline-button");
-          if (button) button.style.display = "none";
-          showControl("new-label");
-          document.getElementById("annotation-label-input").value = "";
-          document.getElementById("annotation-label-input").focus();
-        }
+      // Remove annotation from the list and redraw annotations
+      function removeAnnotation(index) {
+        annotations.splice(index, 1); // Remove the annotation from the array
+        updateAnnotationList(); // Update the list
+        redrawAnnotations(); // Redraw annotations
+
+        // Save to local storage
+        saveAnnotationsToLocalStorage();
+      }
+
+      // Redraw all annotations
+      function redrawAnnotations(highlight = false) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas
+        annotations.forEach((ann) => {
+          if (ann.type === "boundingBox") {
+            drawBoundingBox(
+              ann.x,
+              ann.y,
+              ann.width,
+              ann.height,
+              ann.color,
+              highlight && ann === selectedAnnotation
+            );
+            ctx.fillStyle = ann === selectedAnnotation ? "#009682" : ann.color; // Set text color
+            ctx.font = "12px Arial"; // Set text font
+            ctx.fillText(ann.label, ann.x, ann.y - 5); // Draw label above bounding box
+          } else if (ann.type === "polyline") {
+            drawPolyline(
+              ann.points,
+              ann.color,
+              highlight && ann === selectedAnnotation
+            );
+            ctx.fillStyle = ann === selectedAnnotation ? "#009682" : ann.color; // Set text color
+            ctx.font = "12px Arial"; // Set text font
+            ctx.fillText(ann.label, ann.points[0].x, ann.points[0].y - 5); // Draw label at the start of polyline
+          }
+        });
       }
 
       // Draw a bounding box with the specified dimensions
@@ -1252,33 +1275,15 @@
         }
       }
 
-      // Redraw all annotations
-      function redrawAnnotations(highlight = false) {
-        ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas
-        annotations.forEach((ann) => {
-          if (ann.type === "boundingBox") {
-            drawBoundingBox(
-              ann.x,
-              ann.y,
-              ann.width,
-              ann.height,
-              ann.color,
-              highlight && ann === selectedAnnotation
-            );
-            ctx.fillStyle = ann === selectedAnnotation ? "#009682" : ann.color; // Set text color
-            ctx.font = "12px Arial"; // Set text font
-            ctx.fillText(ann.label, ann.x, ann.y - 5); // Draw label above bounding box
-          } else if (ann.type === "polyline") {
-            drawPolyline(
-              ann.points,
-              ann.color,
-              highlight && ann === selectedAnnotation
-            );
-            ctx.fillStyle = ann === selectedAnnotation ? "#009682" : ann.color; // Set text color
-            ctx.font = "12px Arial"; // Set text font
-            ctx.fillText(ann.label, ann.points[0].x, ann.points[0].y - 5); // Draw label at the start of polyline
-          }
-        });
+      // Finish polyline drawing
+      function finishPolyline() {
+        if (currentPoints.length > 1) {
+          const button = document.getElementById("finish-polyline-button");
+          if (button) button.style.display = "none";
+          showControl("new-label");
+          document.getElementById("annotation-label-input").value = "";
+          document.getElementById("annotation-label-input").focus();
+        }
       }
 
       // Check if a point is inside an annotation
@@ -1536,6 +1541,11 @@
         document.getElementById("contrast-controls").style.display = "none";
         document.getElementById("polyline-controls").style.display = "none";
         document.getElementById("new-label").style.display = "none";
+        document.getElementById("overlay-submit").style.display = "none";
+        document.getElementById("leave-annotation-overlay").style.display =
+          "none";
+        document.getElementById("restart-annotation-overlay").style.display =
+          "none";
       }
 
       // Show all controls
@@ -1655,9 +1665,18 @@
       // Clear annotations and restart the annotation process
       function restartAnnotationProcess() {
         annotations = [];
+
         ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas
         redrawAnnotations(); // Redraw annotations
         updateAnnotationList(); // Update the list
+
+        contrast = 0;
+        brightness = 0;
+
+        document.getElementById("contrast-value").innerText = contrast;
+        document.getElementById("brightness-value").innerText = brightness;
+
+        applyImageAdjustments();
 
         // Remove annotations from local storage
         localStorage.removeItem("annotations");
@@ -1736,10 +1755,7 @@
           .getElementById("restart-annotation-button")
           .addEventListener("click", () => {
             restartAnnotationProcess();
-            document.getElementById("overlay-submit").style.display = "none";
-            document.getElementById(
-              "restart-annotation-overlay"
-            ).style.display = "none";
+            hideAllControls(); // Hide all controls
           });
 
         document
@@ -1755,9 +1771,7 @@
           .getElementById("leave-annotation-button")
           .addEventListener("click", () => {
             removeFile();
-            document.getElementById("overlay-submit").style.display = "none";
-            document.getElementById("leave-annotation-overlay").style.display =
-              "none";
+            hideAllControls(); // Hide all controls
           });
 
         document
@@ -1771,6 +1785,9 @@
         // Ensure overlay controls are hidden initially
         hideAllControls();
       }
+
+      // Initialize the upload functionality
+      initUpload();
 
       // Call initAnnotationTool to set up event listeners
       initAnnotationTool();
