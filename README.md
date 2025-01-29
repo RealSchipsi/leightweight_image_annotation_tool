@@ -15,6 +15,22 @@ This project is a **lightweight, embeddable annotation tool** that allows users 
 - Download annotations as a JSON file.
 - Remove annotations and restart the annotation process.
 
+## Installation and Hosting
+
+### Installation
+
+1. **Clone the repository**  
+   Clone the repository to your local machine using Git:  
+   ```bash
+   git clone https://github.com/RealSchipsi/embedded_annotation.git
+2. **Navigate to the project directory**
+   ```bash
+   cd annotation-tool
+
+### Hosting
+ - Open the index.html file in your web browser
+ - Alternatively, if you are using Visual Studio Code, you can install the Live Server extension by Ritwick Dey.
+   - Right-click index.html and select "Open with Live Server" to run the tool on localhost.
 ---
 
 ## Usage
@@ -54,8 +70,36 @@ This project is a **lightweight, embeddable annotation tool** that allows users 
 
 ---
 
+## Code Structure
+The entire annotation tool is contained within a single `index.html` file, which is structured into three main sections:
+
+1. **Styling (CSS)**  
+ - The styles are included within `<style>` tags at the beginning of the file.
+ - CSS handles the layout, annotation styles, toolbar positioning, and interactive elements.
+
+2. **HTML Markup**  
+ - The core structure of the tool is written in HTML.
+ - It includes elements such as:
+   - The **image upload area**.
+   - The **toolbar** for annotation selection.
+   - The **canvas** where users draw bounding boxes and polylines.
+   - Input fields for labeling annotations.
+
+3. **JavaScript (Scripts for Functionality)**  
+ - JavaScript is included inside `<script>` tags at the bottom of the file.
+ - It provides the core functionalities, including:
+   - Image upload and display.
+   - Annotation drawing and editing.
+   - Adjusting brightness and contrast.
+   - Local storage management.
+   - Exporting annotations as a JSON file.
+
+This structure ensures that the tool remains lightweight, self-contained, and easy to embed.
+
+---
+
 ## Acknowledgements
-**Icons:** Font Awesome.
+**Icons:** Font Awesome.  
 **Logo:** Karlsruhe Institute of Technology (KIT).
 
 ---
