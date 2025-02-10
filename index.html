@@ -851,28 +851,6 @@
       let isResizing = false;
       let resizeHandleSize = 10; // Size of resize handles
 
-      // Initialize buttons with click events
-      function initAnnotationTool() {
-        boundingBoxButton.addEventListener("click", () =>
-          selectAnnotationType("boundingBox")
-        );
-        polylineButton.addEventListener("click", () =>
-          selectAnnotationType("polyline")
-        );
-        finishPolylineButton.addEventListener("click", finishPolyline);
-        pointerButton.addEventListener("click", () =>
-          selectAnnotationType("pointer")
-        );
-
-        canvas.addEventListener("mousedown", startDrawing);
-        canvas.addEventListener("mousemove", drawAnnotation);
-        canvas.addEventListener("mouseup", stopDrawing);
-        canvas.addEventListener("mousedown", (e) => {
-          e.preventDefault();
-          e.stopPropagation();
-        });
-      }
-
       // Update the annotation list
       function updateAnnotationList() {
         const annotationList = document.getElementById("annotation-list");
@@ -978,41 +956,6 @@
           // Append the list item to the annotation list
           annotationList.appendChild(listItem);
         });
-      }
-
-      // Select the annotation type
-      function selectAnnotationType(type) {
-        currentType = type;
-
-        // Remove active class from ALL buttons including brightness and contrast
-        document.querySelectorAll(".annotation-button").forEach((button) => {
-          button.classList.remove("active");
-        });
-
-        // Hide sliders and reset adjustments
-        document.getElementById("brightness-slider").style.display = "none";
-        document.getElementById("contrast-slider").style.display = "none";
-        isBrightnessMode = false;
-        isContrastMode = false;
-
-        // Reset image adjustments
-        brightness = 0;
-        contrast = 0;
-        document.getElementById("brightness-slider").value = 0;
-        document.getElementById("contrast-slider").value = 0;
-        document.getElementById("uploaded-image-display").style.filter = "none";
-
-        // Set active class only for annotation type buttons
-        if (type === "boundingBox") {
-          boundingBoxButton.classList.add("active");
-          finishPolylineButton.style.display = "none";
-        } else if (type === "polyline") {
-          polylineButton.classList.add("active");
-          finishPolylineButton.style.display = "block";
-        } else if (type === "pointer") {
-          pointerButton.classList.add("active");
-          finishPolylineButton.style.display = "none";
-        }
       }
 
       // Start drawing when mouse is pressed
